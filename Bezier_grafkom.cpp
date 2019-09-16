@@ -1,5 +1,5 @@
 // Edward Hosea / c14170059
-// Transformasi Bezier curve
+// Bezier curve
 // Grafika komputer - Universitas Kristen Petra
 #include <windows.h>
 #include <GL/glut.h>
