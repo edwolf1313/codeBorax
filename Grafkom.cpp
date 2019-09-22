@@ -45,7 +45,7 @@ public:
 	}
 	void init_rectangle() {
 		v.clear();
-		glBegin(GL_POLYGON);
+		glBegin(GL_LINES);
 		glColor3f(1.0, 1.0, 1.0);//putih
 		init_coordinat(v, 0.0, 0.5, 0);
 		init_coordinat(v, 0.5, -0.5, 0);
@@ -63,85 +63,95 @@ public:
 		load_object();
 		draw_object();
 	}
-	void split(string n, vector<float>&res_x, vector<float>&res_y, vector<float>&res_z) {
+	void split(string n, vector<vector<float>>&res_dots) {
 		string result;
 		istringstream rlt(n);
-		vector<float>res;
+		vector<float>ecdot;
 		while (getline(rlt, result, '/')) {
 			if (result == "") {
-				/*res.push_back(stof(result) - 1);*/
+				ecdot.push_back(0.0);
 			}
 			else {
-				res.push_back(stof(result) - 1);
+				ecdot.push_back(stof(result) - 1);
 			}
 		}
-		res_x.push_back(res[0]);
-		res_y.push_back(res[1]);
-		res_z.push_back(res[2]);
+		res_dots.push_back(ecdot);
+	}
+	void split_face() {
+
+	}
+	void normalize() {
+
 	}
 	void load_object() { // load cat.obj
 		string ecline;
-		ifstream load_obj("cat.obj", ios::out);
+		ifstream load_obj("Avent.obj", ios::out);
 		/*cout << load_obj.tellg();*/
 		//	
 		while (!load_obj.eof()) {
-			vector<float> tmp_v;
-			string x, y, z, h;
+			string result;
+			vector<float>res_dot;
+			vector<vector<float>>res_dots;
 			getline(load_obj, ecline);
+			istringstream tmlin(ecline);  // istringstream getline pada string  // untuk baris yang sama
 			if (ecline[0] == 'v' && ecline[1] == ' ')
-			{
-				istringstream tmlin(ecline); // istringstream getline pada string 
-											 // untuk baris yang sama
-				tmlin >> h >> x >> y >> z;
-				/*cout << x << ";" << y << ";" << z << endl;*/
-				tmp_v.push_back(stof(x)); //konversi float 
-				tmp_v.push_back(stof(y));
-				tmp_v.push_back(stof(z));
-				v.push_back(tmp_v);
-			}
-			else if (ecline[0] == 'v' && ecline[1] == 't') {
-				istringstream tmlin(ecline);
-				tmlin >> h >> x >> y;
-				/*cout << x << ";" << y << ";" << z << endl;*/
-				tmp_v.push_back(stof(x)); //konversi float 
-				tmp_v.push_back(stof(y));
-				vt.push_back(tmp_v);
-			}
-			else if (ecline[0] == 'v' && ecline[1] == 'n') {
-				istringstream tmlin(ecline);
-				tmlin >> h >> x >> y >> z;
-				/*cout << x << ";" << y << ";" << z << endl;*/
-				tmp_v.push_back(stof(x)); //konversi float 
-				tmp_v.push_back(stof(y));
-				tmp_v.push_back(stof(z));
-				vn.push_back(tmp_v);
-			}
-			else  if (ecline[0] == 'f' && ecline[1] == ' ') {
-				istringstream tmlin(ecline);
-				string result;
-				vector<float>res_x, res_y, res_z;
+			{				
 				while (getline(tmlin, result, ' ')) {
-					if (result != "f") {
-						split(result, res_x, res_y, res_z);
-						
+					if (result != "v") {
+						res_dot.push_back(stof(result));
 					}
 				}
-				fv.push_back(res_x);
-				ft.push_back(res_y);
-				fn.push_back(res_z);
-				/*cout << x << ";" << y << ";" << z << endl;*/
-
+				v.push_back(res_dot);
+			}
+			else if (ecline[0] == 'v' && ecline[1] == 't') {
+				while (getline(tmlin, result, ' ')) {
+					if (result != "vt") {
+						res_dot.push_back(stof(result));
+					}
+				}
+				vt.push_back(res_dot);
+			}
+			else if (ecline[0] == 'v' && ecline[1] == 'n') {
+				while (getline(tmlin, result, ' ')) {
+					if (result != "vn") {
+						res_dot.push_back(stof(result));
+					}
+				}	
+				vn.push_back(res_dot);
+			}
+			else  if (ecline[0] == 'f' && ecline[1] == ' ') {
+				while (getline(tmlin, result, ' ')) {
+					if (result != "f") {
+						split(result, res_dots);
+					}
+				}
+				vector<float> tmp_fv, tmp_fn, tmp_ft;
+				for (int x = 0; x < res_dots.size(); x++) {
+					for (int y = 0; y < res_dots[x].size(); y++) {
+						if (y == 0) {
+							tmp_fv.push_back(res_dots[x][y]);
+						}
+						else if (y == 1) {
+							tmp_ft.push_back(res_dots[x][y]);
+						}
+						else if (y == 2) {
+							tmp_fn.push_back(res_dots[x][y]);
+						}
+					}
+				}
+				fv.push_back(tmp_fv);
+				ft.push_back(tmp_ft);
+				fn.push_back(tmp_fn);
 			}
 		}
 	}
 	void draw_object() {	
 		glColor3f(1.0, 1.0, 1.0);
 		for (int x = 0; x < fv.size(); x++) {
-			glBegin(GL_POLYGON);
+			glBegin(GL_LINES);
 			for (int y = 0; y < fv[x].size(); y++) {
 			/*cout << fv[x][0] << endl;*/
 			glVertex3f(v[(fv[x][y])][0], v[(fv[x][y])][1], v[(fv[x][y])][2]);
-			glNormal3f(vn[(fn[x][y])][0], vn[(fn[x][y])][1], vn[(fn[x][y])][2]);
 			}
 			glEnd();
 		}
@@ -380,6 +390,9 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);          // Initialize GLUT
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(sizewin, sizewin);   // Set the window's initial width & height
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0f, sizewin, sizewin, 0.0f, 0.0f, 1.0f);
 	glutCreateWindow("Grafkom");  // Create window with the given title
 	glutInitWindowPosition(320, 320); // Position the window's initial top-left corner
 	glutDisplayFunc(display);       // Register callback handler for window re-paint event
