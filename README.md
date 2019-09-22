@@ -1,6 +1,7 @@
 # codeBorax
 Edward Hosea - Indonesia
-code for learning
-Make sure you download glut and directly import to your project before load these files.
-This is basic coding for loading object (.obj) 3D with transformation matriks and homogenous method.
-Bezier with many vertex.
+<br>
+Code for learning <br>
+Make sure you download glut and directly import to your project before load these files.<br>
+This is basic coding for loading object (.obj) 3D with transformation matriks and homogenous method. <br>
+Bezier with many vertex. <br>
